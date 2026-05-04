@@ -35,10 +35,10 @@ const AUTOMATION_TYPES = [
 ]
 
 const WORKFLOW_STEPS = [
-  { label: "Trigger", color: "bg-indigo-500", textColor: "text-indigo-300" },
-  { label: "Parse",   color: "bg-purple-500", textColor: "text-purple-300" },
-  { label: "AI Step", color: "bg-cyan-500",   textColor: "text-cyan-300" },
-  { label: "Action",  color: "bg-emerald-500", textColor: "text-emerald-300" },
+  { label: "Trigger", dot: "bg-indigo-500", bg: "bg-indigo-500/10", border: "border-indigo-500/30", textColor: "text-indigo-300" },
+  { label: "Parse",   dot: "bg-purple-500", bg: "bg-purple-500/10", border: "border-purple-500/30", textColor: "text-purple-300" },
+  { label: "AI Step", dot: "bg-cyan-500",   bg: "bg-cyan-500/10",   border: "border-cyan-500/30",   textColor: "text-cyan-300" },
+  { label: "Action",  dot: "bg-emerald-500",bg: "bg-emerald-500/10",border: "border-emerald-500/30",textColor: "text-emerald-300" },
 ]
 
 export default function Automation() {
@@ -78,10 +78,8 @@ export default function Automation() {
             <div className="flex items-center gap-2 overflow-x-auto pb-2">
               {WORKFLOW_STEPS.map((step, i) => (
                 <div key={step.label} className="flex items-center gap-2 flex-shrink-0">
-                  <div className={`px-4 py-2.5 rounded-xl border ${step.bg}/20 border-opacity-30 flex items-center gap-2 text-sm font-medium ${step.textColor}`}
-                    style={{ borderColor: step.color.replace("bg-", "").replace("-500", "") === step.color ? "rgba(99,102,241,0.3)" : undefined,
-                      background: `${step.color.replace("bg-", "rgba(").replace("-500", ",0.1)")})` }}>
-                    <span className={`w-2 h-2 rounded-full ${step.color}`}
+                  <div className={`px-4 py-2.5 rounded-xl border ${step.bg} ${step.border} flex items-center gap-2 text-sm font-medium ${step.textColor}`}>
+                    <span className={`w-2 h-2 rounded-full ${step.dot}`}
                       style={{ animation: `pulse-glow ${1 + i * 0.3}s ease-in-out infinite` }} />
                     {step.label}
                   </div>
