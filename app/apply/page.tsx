@@ -1,0 +1,291 @@
+"use client"
+
+import { useState } from "react"
+import Link from "next/link"
+import { ArrowLeft, ArrowRight, CheckCircle2, Zap, User, Mail, Phone, Github, Linkedin, Globe, Code2, Brain, Layers, Server, Cloud, Wrench, BarChart3, Briefcase, GraduationCap, Upload } from "lucide-react"
+
+const DEPARTMENTS = [
+  { id: "ai-ml",      icon: Brain,    label: "AI / ML Engineering",      desc: "LLM agents, RAG systems, model training" },
+  { id: "frontend",   icon: Code2,    label: "Frontend Development",      desc: "Next.js, React, UI/UX engineering" },
+  { id: "backend",    icon: Server,   label: "Backend Development",       desc: "APIs, databases, microservices" },
+  { id: "automation", icon: Wrench,   label: "Automation Engineering",    desc: "Workflow automation, RPA, integrations" },
+  { id: "devops",     icon: Cloud,    label: "DevOps / Cloud",            desc: "AWS, GCP, Docker, CI/CD pipelines" },
+  { id: "data",       icon: BarChart3,label: "Data Engineering",          desc: "Pipelines, analytics, data products" },
+  { id: "fullstack",  icon: Layers,   label: "Full Stack Development",    desc: "End-to-end product engineering" },
+]
+
+const EXPERIENCE_LEVELS = ["0–1 year (Fresher)", "1–2 years", "2–4 years", "4–7 years", "7+ years"]
+const AVAILABILITY = ["Immediately", "Within 2 weeks", "Within 1 month", "1–3 months notice"]
+
+export default function ApplyPage() {
+  const [positionType, setPositionType] = useState<"intern" | "fulltime">("intern")
+  const [selectedDepts, setSelectedDepts] = useState<string[]>([])
+  const [submitted, setSubmitted] = useState(false)
+  const [step, setStep] = useState(1)
+
+  const toggleDept = (id: string) => {
+    setSelectedDepts((prev) =>
+      prev.includes(id) ? prev.filter((d) => d !== id) : [...prev, id]
+    )
+  }
+
+  if (submitted) {
+    return (
+      <div className="min-h-screen grid-pattern flex items-center justify-center px-4 pt-16">
+        <div className="text-center max-w-lg">
+          <div className="w-20 h-20 bg-emerald-500/15 border border-emerald-500/30 rounded-full flex items-center justify-center mx-auto mb-6 glow-emerald">
+            <CheckCircle2 className="w-10 h-10 text-emerald-400" />
+          </div>
+          <h2 className="text-3xl font-bold text-white mb-3">Application Submitted!</h2>
+          <p className="text-[#8888aa] leading-relaxed mb-8">
+            Thanks for applying to Champspace. We review every application personally and will get back to you within <span className="text-indigo-300 font-medium">3 business days</span>.
+          </p>
+          <Link href="/" className="btn-primary inline-flex items-center gap-2 text-white font-semibold px-8 py-4 rounded-xl">
+            <span>Back to Home</span>
+          </Link>
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div className="min-h-screen grid-pattern pt-16">
+      {/* Ambient */}
+      <div className="fixed top-1/4 -left-40 w-[500px] h-[500px] bg-indigo-500/6 rounded-full blur-[120px] pointer-events-none" />
+      <div className="fixed bottom-1/4 -right-40 w-[400px] h-[400px] bg-purple-500/6 rounded-full blur-[100px] pointer-events-none" />
+
+      <div className="relative z-10 max-w-3xl mx-auto px-4 sm:px-6 py-12">
+        {/* Back */}
+        <Link href="/" className="inline-flex items-center gap-2 text-[#8888aa] hover:text-indigo-300 text-sm mb-8 transition-colors">
+          <ArrowLeft className="w-4 h-4" />
+          Back to Champspace
+        </Link>
+
+        {/* Header */}
+        <div className="mb-10">
+          <div className="inline-flex items-center gap-2 glass rounded-full px-4 py-2 mb-4 border border-indigo-500/20">
+            <Zap className="w-3.5 h-3.5 text-indigo-400" />
+            <span className="text-sm text-indigo-200 font-medium">2026 Applications Open</span>
+          </div>
+          <h1 className="text-4xl sm:text-5xl font-bold text-white mb-3">
+            Join the <span className="gradient-text">Champspace Team</span>
+          </h1>
+          <p className="text-[#8888aa] text-lg">
+            Apply for an internship or full-time role. We build real AI products — and we want you building with us.
+          </p>
+        </div>
+
+        {/* Step indicator */}
+        <div className="flex items-center gap-3 mb-10">
+          {[1, 2, 3].map((s) => (
+            <div key={s} className="flex items-center gap-3">
+              <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold transition-all ${
+                s < step ? "bg-emerald-500 text-white" :
+                s === step ? "bg-indigo-500 text-white glow-indigo" :
+                "bg-[#1a1a2e] text-[#8888aa] border border-indigo-500/20"
+              }`}>
+                {s < step ? <CheckCircle2 className="w-4 h-4" /> : s}
+              </div>
+              <span className={`text-sm font-medium ${s === step ? "text-white" : "text-[#8888aa]"}`}>
+                {s === 1 ? "Role & Department" : s === 2 ? "Personal Details" : "Experience & Submit"}
+              </span>
+              {s < 3 && <div className="w-8 h-px bg-indigo-500/20 hidden sm:block" />}
+            </div>
+          ))}
+        </div>
+
+        <div className="glass-strong border border-indigo-500/20 rounded-3xl p-6 sm:p-8">
+
+          {/* ── Step 1 ── */}
+          {step === 1 && (
+            <div>
+              <h2 className="text-xl font-bold text-white mb-6">What kind of role are you looking for?</h2>
+
+              {/* Position type */}
+              <div className="grid grid-cols-2 gap-3 mb-8">
+                {([["intern", GraduationCap, "Internship", "3–6 month program"], ["fulltime", Briefcase, "Full-Time", "Permanent position"]] as const).map(([val, Icon, label, sub]) => (
+                  <button key={val} onClick={() => setPositionType(val)}
+                    className={`p-4 rounded-2xl border text-left transition-all ${
+                      positionType === val
+                        ? "border-indigo-500/60 bg-indigo-500/10 glow-indigo"
+                        : "border-indigo-500/15 bg-[#0a0a18] hover:border-indigo-500/30"
+                    }`}>
+                    <Icon className={`w-6 h-6 mb-2 ${positionType === val ? "text-indigo-400" : "text-[#8888aa]"}`} />
+                    <div className={`font-semibold text-sm ${positionType === val ? "text-white" : "text-[#aaaacc]"}`}>{label}</div>
+                    <div className="text-xs text-[#8888aa] mt-0.5">{sub}</div>
+                  </button>
+                ))}
+              </div>
+
+              {/* Department */}
+              <h3 className="text-white font-semibold mb-3">
+                Select Department(s) <span className="text-[#8888aa] font-normal text-sm">(pick all that apply)</span>
+              </h3>
+              <div className="grid sm:grid-cols-2 gap-3 mb-8">
+                {DEPARTMENTS.map(({ id, icon: Icon, label, desc }) => {
+                  const active = selectedDepts.includes(id)
+                  return (
+                    <button key={id} onClick={() => toggleDept(id)}
+                      className={`p-4 rounded-xl border text-left transition-all flex items-start gap-3 ${
+                        active
+                          ? "border-indigo-500/55 bg-indigo-500/10"
+                          : "border-indigo-500/12 bg-[#0a0a18] hover:border-indigo-500/30"
+                      }`}>
+                      <div className={`w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 ${active ? "bg-indigo-500/20" : "bg-[#13132a]"}`}>
+                        <Icon className={`w-4 h-4 ${active ? "text-indigo-400" : "text-[#8888aa]"}`} />
+                      </div>
+                      <div>
+                        <div className={`text-sm font-semibold ${active ? "text-white" : "text-[#aaaacc]"}`}>{label}</div>
+                        <div className="text-xs text-[#8888aa] mt-0.5">{desc}</div>
+                      </div>
+                      {active && <CheckCircle2 className="w-4 h-4 text-indigo-400 ml-auto mt-0.5 flex-shrink-0" />}
+                    </button>
+                  )
+                })}
+              </div>
+
+              <button onClick={() => setStep(2)} disabled={selectedDepts.length === 0}
+                className="btn-primary w-full inline-flex items-center justify-center gap-2 text-white font-bold py-4 rounded-xl disabled:opacity-40 disabled:cursor-not-allowed">
+                <span>Continue</span>
+                <ArrowRight className="w-4 h-4" style={{ position: "relative", zIndex: 1 }} />
+              </button>
+            </div>
+          )}
+
+          {/* ── Step 2 ── */}
+          {step === 2 && (
+            <div>
+              <h2 className="text-xl font-bold text-white mb-6">Tell us about yourself</h2>
+              <div className="space-y-4">
+                <div className="grid sm:grid-cols-2 gap-4">
+                  <Field icon={<User className="w-4 h-4" />} label="Full Name" placeholder="Your full name" type="text" />
+                  <Field icon={<Mail className="w-4 h-4" />} label="Email Address" placeholder="you@example.com" type="email" />
+                </div>
+                <div className="grid sm:grid-cols-2 gap-4">
+                  <Field icon={<Phone className="w-4 h-4" />} label="Phone Number" placeholder="+91 98765 43210" type="tel" />
+                  <div>
+                    <label className="text-xs text-[#8888aa] font-medium mb-1.5 block">Location</label>
+                    <input type="text" placeholder="City, Country"
+                      className="w-full glass border border-indigo-500/20 rounded-xl px-4 py-3 text-sm text-white placeholder-[#555577] focus:outline-none focus:border-indigo-500/55 transition-colors" />
+                  </div>
+                </div>
+                <div className="grid sm:grid-cols-3 gap-4">
+                  <Field icon={<Github className="w-4 h-4" />} label="GitHub" placeholder="github.com/username" type="url" />
+                  <Field icon={<Linkedin className="w-4 h-4" />} label="LinkedIn" placeholder="linkedin.com/in/you" type="url" />
+                  <Field icon={<Globe className="w-4 h-4" />} label="Portfolio / Website" placeholder="yoursite.com" type="url" />
+                </div>
+                <div>
+                  <label className="text-xs text-[#8888aa] font-medium mb-1.5 block">College / University (if applicable)</label>
+                  <input type="text" placeholder="e.g. IIT Delhi, VIT Vellore"
+                    className="w-full glass border border-indigo-500/20 rounded-xl px-4 py-3 text-sm text-white placeholder-[#555577] focus:outline-none focus:border-indigo-500/55 transition-colors" />
+                </div>
+                <div>
+                  <label className="text-xs text-[#8888aa] font-medium mb-1.5 block">Your Tech Stack / Skills</label>
+                  <input type="text" placeholder="e.g. Python, React, LangChain, Docker, PostgreSQL"
+                    className="w-full glass border border-indigo-500/20 rounded-xl px-4 py-3 text-sm text-white placeholder-[#555577] focus:outline-none focus:border-indigo-500/55 transition-colors" />
+                </div>
+              </div>
+
+              <div className="flex gap-3 mt-6">
+                <button onClick={() => setStep(1)} className="btn-outline flex-1 text-indigo-300 font-semibold py-3.5 rounded-xl">
+                  Back
+                </button>
+                <button onClick={() => setStep(3)} className="btn-primary flex-[2] inline-flex items-center justify-center gap-2 text-white font-bold py-3.5 rounded-xl">
+                  <span>Continue</span>
+                  <ArrowRight className="w-4 h-4" style={{ position: "relative", zIndex: 1 }} />
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* ── Step 3 ── */}
+          {step === 3 && (
+            <div>
+              <h2 className="text-xl font-bold text-white mb-6">Experience & final details</h2>
+              <div className="space-y-4">
+
+                <div className="grid sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-xs text-[#8888aa] font-medium mb-1.5 block">Experience Level</label>
+                    <select className="w-full glass border border-indigo-500/20 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-indigo-500/55 transition-colors bg-transparent cursor-pointer">
+                      <option value="" className="bg-[#0d0d21]">Select level...</option>
+                      {EXPERIENCE_LEVELS.map((l) => <option key={l} value={l} className="bg-[#0d0d21]">{l}</option>)}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="text-xs text-[#8888aa] font-medium mb-1.5 block">Availability to Start</label>
+                    <select className="w-full glass border border-indigo-500/20 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-indigo-500/55 transition-colors bg-transparent cursor-pointer">
+                      <option value="" className="bg-[#0d0d21]">Select availability...</option>
+                      {AVAILABILITY.map((a) => <option key={a} value={a} className="bg-[#0d0d21]">{a}</option>)}
+                    </select>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="text-xs text-[#8888aa] font-medium mb-1.5 block">Tell us about yourself & why Champspace</label>
+                  <textarea rows={4} placeholder="Your background, what you've built, and why you want to join Champspace..."
+                    className="w-full glass border border-indigo-500/20 rounded-xl px-4 py-3 text-sm text-white placeholder-[#555577] focus:outline-none focus:border-indigo-500/55 transition-colors resize-none" />
+                </div>
+
+                <div>
+                  <label className="text-xs text-[#8888aa] font-medium mb-1.5 block">Share a project or work you're proud of</label>
+                  <textarea rows={3} placeholder="Describe a project you've built — what it does, the tech stack, your role, and the impact..."
+                    className="w-full glass border border-indigo-500/20 rounded-xl px-4 py-3 text-sm text-white placeholder-[#555577] focus:outline-none focus:border-indigo-500/55 transition-colors resize-none" />
+                </div>
+
+                <div>
+                  <label className="text-xs text-[#8888aa] font-medium mb-1.5 block">Resume / CV</label>
+                  <label className="flex items-center gap-3 glass border border-dashed border-indigo-500/30 rounded-xl px-4 py-4 cursor-pointer hover:border-indigo-500/55 transition-colors">
+                    <Upload className="w-5 h-5 text-indigo-400 flex-shrink-0" />
+                    <div>
+                      <div className="text-sm text-indigo-300 font-medium">Click to upload resume</div>
+                      <div className="text-xs text-[#8888aa]">PDF or DOC, max 5MB</div>
+                    </div>
+                    <input type="file" accept=".pdf,.doc,.docx" className="hidden" />
+                  </label>
+                </div>
+
+                {/* Summary pill */}
+                <div className="glass border border-indigo-500/15 rounded-xl p-4">
+                  <div className="text-xs text-[#8888aa] mb-2 font-medium">Your application summary</div>
+                  <div className="flex flex-wrap gap-2">
+                    <span className="tag">{positionType === "intern" ? "Internship" : "Full-Time"}</span>
+                    {selectedDepts.map((d) => (
+                      <span key={d} className="tag">{DEPARTMENTS.find((x) => x.id === d)?.label}</span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex gap-3 mt-6">
+                <button onClick={() => setStep(2)} className="btn-outline flex-1 text-indigo-300 font-semibold py-3.5 rounded-xl">
+                  Back
+                </button>
+                <button onClick={() => setSubmitted(true)}
+                  className="btn-primary flex-[2] inline-flex items-center justify-center gap-2 text-white font-bold py-4 rounded-xl">
+                  <span>Submit Application</span>
+                  <ArrowRight className="w-4 h-4" style={{ position: "relative", zIndex: 1 }} />
+                </button>
+              </div>
+              <p className="text-xs text-[#8888aa] text-center mt-3">We reply to every application within 3 business days.</p>
+            </div>
+          )}
+
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function Field({ icon, label, placeholder, type }: { icon: React.ReactNode; label: string; placeholder: string; type: string }) {
+  return (
+    <div>
+      <label className="text-xs text-[#8888aa] font-medium mb-1.5 block">{label}</label>
+      <div className="relative">
+        <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#555577]">{icon}</span>
+        <input type={type} placeholder={placeholder}
+          className="w-full glass border border-indigo-500/20 rounded-xl pl-10 pr-4 py-3 text-sm text-white placeholder-[#555577] focus:outline-none focus:border-indigo-500/55 transition-colors" />
+      </div>
+    </div>
+  )
+}

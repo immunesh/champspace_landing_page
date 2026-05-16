@@ -106,20 +106,19 @@ export default function Hero() {
           </h1>
 
           <p className="text-lg text-[#8888aa] leading-relaxed mb-8 max-w-lg">
-            The internship where you don't just learn AI — you ship it. Work with engineers
-            building production-ready AI agents, LLM apps, and intelligent automation for real clients.
+            Champspace is the technology backbone powering Allendesi and building future-ready AI and digital products while creating real-world career opportunities for developers.
           </p>
 
           <div className="flex flex-wrap gap-4 mb-10">
-            <a href="#apply"
+            <a href="/apply"
               className="group btn-primary inline-flex items-center gap-2 text-white font-semibold px-8 py-4 rounded-xl">
-              <span>Apply Now</span>
+              <span>Apply as Engineer</span>
               <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" style={{ position: "relative", zIndex: 1 }} />
             </a>
-            <a href="#programs"
+            <a href="/project"
               className="btn-outline inline-flex items-center gap-2 text-indigo-300 font-semibold px-8 py-4 rounded-xl">
               <Sparkles className="w-4 h-4" />
-              Explore Programs
+              Submit a Project
             </a>
           </div>
 
