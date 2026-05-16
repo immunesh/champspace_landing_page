@@ -2,67 +2,53 @@
 
 import { useCallback, useEffect, useState } from "react"
 import useEmblaCarousel from "embla-carousel-react"
-import { Play, ChevronLeft, ChevronRight, X } from "lucide-react"
+import { Play, ChevronLeft, ChevronRight, X, Building2 } from "lucide-react"
 import { useIntersection } from "@/hooks/use-intersection"
 
-const VIDEOS = [
+const CLIENT_VIDEOS = [
   {
-    name: "Aisha Patel",
-    role: "AI Engineer",
-    track: "Industry Dev Track",
+    company: "TechVentures Inc.",
+    name: "Rajiv Mehta",
+    title: "CTO",
+    project: "AI Agent Platform",
     youtubeId: "dQw4w9WgXcQ",
-    quote: "Going from CRUD apps to shipping multi-agent systems in 6 months was unreal.",
-    gradient: "from-indigo-600 to-purple-700",
+    quote: "Champspace delivered an AI agent system that saved our team over 40 hours of manual work every week.",
+    gradient: "from-indigo-600 to-cyan-700",
     tagColor: "bg-indigo-500/15 border-indigo-500/25 text-indigo-300",
   },
   {
-    name: "Marcus Kim",
-    role: "ML Engineer",
-    track: "College Grad Track",
+    company: "RetailEdge Co.",
+    name: "Priya Singh",
+    title: "Head of Operations",
+    project: "Process Automation",
     youtubeId: "dQw4w9WgXcQ",
-    quote: "I had a full-time offer before I even finished the program. Champspace was everything.",
+    quote: "Our invoice processing that used to take 3 days now runs overnight, fully automated.",
     gradient: "from-cyan-600 to-indigo-700",
     tagColor: "bg-cyan-500/15 border-cyan-500/25 text-cyan-300",
   },
   {
-    name: "Fatima Al-Hassan",
-    role: "AI Developer",
-    track: "Industry Dev Track",
+    company: "DataFlow Systems",
+    name: "Alex Thompson",
+    title: "VP Engineering",
+    project: "RAG Knowledge Base",
     youtubeId: "dQw4w9WgXcQ",
-    quote: "The curriculum is genuinely current. I was building with LangChain and CrewAI from week two.",
+    quote: "The RAG pipeline they built handles 10,000 queries a day without a single hiccup.",
     gradient: "from-purple-600 to-pink-700",
     tagColor: "bg-purple-500/15 border-purple-500/25 text-purple-300",
   },
   {
-    name: "Rahul Sharma",
-    role: "AI Intern → Full-Time",
-    track: "College Grad Track",
+    company: "HealthFirst Labs",
+    name: "Dr. Neha Kapoor",
+    title: "Director of R&D",
+    project: "Document Processing",
     youtubeId: "dQw4w9WgXcQ",
-    quote: "I went from zero ML experience to reviewing other intern's code by month four.",
+    quote: "Medical records extraction that needed a team of 5 is now fully automated and error-free.",
     gradient: "from-emerald-600 to-cyan-700",
     tagColor: "bg-emerald-500/15 border-emerald-500/25 text-emerald-300",
   },
-  {
-    name: "Sophie Chen",
-    role: "AI Consultant",
-    track: "Industry Dev Track",
-    youtubeId: "dQw4w9WgXcQ",
-    quote: "Part-time format, real deadlines, real stakeholders. Best investment I've made in my career.",
-    gradient: "from-yellow-600 to-orange-700",
-    tagColor: "bg-yellow-500/15 border-yellow-500/25 text-yellow-300",
-  },
-  {
-    name: "James Okoye",
-    role: "Software Engineer",
-    track: "College Grad Track",
-    youtubeId: "dQw4w9WgXcQ",
-    quote: "Every interview I went to, the Champspace work was the highlight. I had 4 offers.",
-    gradient: "from-pink-600 to-purple-700",
-    tagColor: "bg-pink-500/15 border-pink-500/25 text-pink-300",
-  },
 ]
 
-function InternVideoModal({ video, onClose }: { video: (typeof VIDEOS)[0]; onClose: () => void }) {
+function ClientVideoModal({ video, onClose }: { video: (typeof CLIENT_VIDEOS)[0]; onClose: () => void }) {
   useEffect(() => {
     const handler = (e: KeyboardEvent) => { if (e.key === "Escape") onClose() }
     document.addEventListener("keydown", handler)
@@ -80,12 +66,13 @@ function InternVideoModal({ video, onClose }: { video: (typeof VIDEOS)[0]; onClo
       onClick={onClose}
     >
       <div
-        className="relative w-full max-w-3xl glass-strong border border-indigo-500/25 rounded-3xl overflow-hidden glow-indigo"
+        className="relative w-full max-w-3xl glass-strong border border-cyan-500/25 rounded-3xl overflow-hidden"
+        style={{ boxShadow: "0 0 60px rgba(6,182,212,0.15)" }}
         onClick={(e) => e.stopPropagation()}
       >
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 z-10 w-9 h-9 glass border border-white/10 rounded-xl flex items-center justify-center text-white hover:border-indigo-500/50 transition-all"
+          className="absolute top-4 right-4 z-10 w-9 h-9 glass border border-white/10 rounded-xl flex items-center justify-center text-white hover:border-cyan-500/50 transition-all"
           aria-label="Close"
         >
           <X className="w-4 h-4" />
@@ -106,11 +93,11 @@ function InternVideoModal({ video, onClose }: { video: (typeof VIDEOS)[0]; onClo
               {video.name[0]}
             </div>
             <div>
-              <div className="text-white font-semibold text-sm">{video.name}</div>
-              <div className="text-[#8888aa] text-xs">{video.role}</div>
+              <div className="text-white font-semibold text-sm">{video.name} · {video.title}</div>
+              <div className="text-[#8888aa] text-xs">{video.company}</div>
             </div>
             <span className={`ml-auto text-xs px-2.5 py-1 rounded-full border font-medium ${video.tagColor}`}>
-              {video.track}
+              {video.project}
             </span>
           </div>
         </div>
@@ -119,9 +106,9 @@ function InternVideoModal({ video, onClose }: { video: (typeof VIDEOS)[0]; onClo
   )
 }
 
-export default function VideoReviews() {
+export default function ClientVideoTestimonials() {
   const { ref, isVisible } = useIntersection()
-  const [activeModal, setActiveModal] = useState<(typeof VIDEOS)[0] | null>(null)
+  const [activeModal, setActiveModal] = useState<(typeof CLIENT_VIDEOS)[0] | null>(null)
   const [selectedIndex, setSelectedIndex] = useState(0)
 
   const [emblaRef, emblaApi] = useEmblaCarousel({
@@ -154,42 +141,42 @@ export default function VideoReviews() {
   return (
     <>
       <section className="relative py-24 overflow-hidden" ref={ref}>
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[400px] bg-indigo-500/5 rounded-full blur-[120px] pointer-events-none" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[400px] bg-cyan-500/5 rounded-full blur-[120px] pointer-events-none" />
 
         <div className="relative z-10">
           <div className={`text-center mb-12 px-4 reveal ${isVisible ? "visible" : ""}`}>
-            <span className="tag" style={{ color: "#f9a8d4", borderColor: "rgba(236,72,153,0.3)", background: "rgba(236,72,153,0.08)" }}>
-              Intern Reviews
+            <span className="tag" style={{ color: "#67e8f9", borderColor: "rgba(6,182,212,0.3)", background: "rgba(6,182,212,0.08)" }}>
+              Client Stories
             </span>
             <h2 className="text-4xl sm:text-5xl font-bold text-white mt-4 mb-4">
-              Hear It From{" "}
-              <span className="gradient-text">Our Interns</span>
+              What Our{" "}
+              <span className="gradient-text-cyan">Clients Say</span>
             </h2>
             <p className="text-[#8888aa] text-lg max-w-2xl mx-auto">
-              Real stories, unscripted. Watch what our interns have to say about their Champspace experience.
+              Real businesses, real results. Watch how Champspace transformed their operations with AI and automation.
             </p>
           </div>
 
           <div className={`reveal d-200 ${isVisible ? "visible" : ""}`}>
             <div ref={emblaRef} className="overflow-hidden px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
               <div className="flex gap-4 sm:gap-5">
-                {VIDEOS.map((video) => (
+                {CLIENT_VIDEOS.map((video) => (
                   <div key={video.name} className="flex-none w-[85vw] sm:w-[calc(50%-10px)] lg:w-[calc(33.333%-14px)]">
                     <div className="bento-card group cursor-pointer overflow-hidden" onClick={() => setActiveModal(video)}>
                       <div className="relative w-full aspect-video overflow-hidden bg-black">
                         <img
                           src={`https://img.youtube.com/vi/${video.youtubeId}/maxresdefault.jpg`}
-                          alt={video.name}
+                          alt={video.company}
                           className="w-full h-full object-cover"
                           onError={(e) => { (e.target as HTMLImageElement).style.display = "none" }}
                         />
                         <div className={`absolute inset-0 bg-gradient-to-br ${video.gradient} opacity-50`} />
 
                         <div className="absolute inset-0 flex flex-col items-center justify-center">
-                          <div className="w-16 h-16 rounded-full bg-white/15 border-2 border-white/30 flex items-center justify-center text-white font-bold text-2xl mb-2 backdrop-blur-sm">
-                            {video.name[0]}
+                          <div className="w-14 h-14 rounded-2xl bg-white/15 border-2 border-white/30 flex items-center justify-center text-white mb-2 backdrop-blur-sm">
+                            <Building2 className="w-6 h-6" />
                           </div>
-                          <div className="text-white/90 font-semibold text-sm">{video.name}</div>
+                          <div className="text-white/90 font-semibold text-sm">{video.company}</div>
                         </div>
 
                         <div className="absolute inset-0 flex items-center justify-center bg-black/30 opacity-0 group-hover:opacity-100 transition-all duration-300">
@@ -198,7 +185,7 @@ export default function VideoReviews() {
                           </div>
                         </div>
 
-                        <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-black/50 to-transparent" />
+                        <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-black/60 to-transparent" />
                       </div>
 
                       <div className="p-5">
@@ -208,10 +195,10 @@ export default function VideoReviews() {
                         <div className="flex items-center justify-between">
                           <div>
                             <div className="text-white font-semibold text-sm">{video.name}</div>
-                            <div className="text-[#8888aa] text-xs">{video.role}</div>
+                            <div className="text-[#8888aa] text-xs">{video.title} · {video.company}</div>
                           </div>
                           <span className={`text-xs px-2.5 py-1 rounded-full border font-medium ${video.tagColor}`}>
-                            {video.track.split(" ")[0]}
+                            {video.project.split(" ")[0]}
                           </span>
                         </div>
                       </div>
@@ -223,27 +210,27 @@ export default function VideoReviews() {
           </div>
 
           <div className={`flex items-center justify-center gap-6 mt-8 px-4 reveal d-300 ${isVisible ? "visible" : ""}`}>
-            <button onClick={scrollPrev} className="w-11 h-11 glass border border-indigo-500/25 rounded-xl flex items-center justify-center text-[#8888aa] hover:text-indigo-300 hover:border-indigo-500/55 transition-all active:scale-95" aria-label="Previous">
+            <button onClick={scrollPrev} className="w-11 h-11 glass border border-cyan-500/25 rounded-xl flex items-center justify-center text-[#8888aa] hover:text-cyan-300 hover:border-cyan-500/55 transition-all active:scale-95" aria-label="Previous">
               <ChevronLeft className="w-5 h-5" />
             </button>
             <div className="flex items-center gap-2">
               {scrollSnaps.map((_, i) => (
                 <button key={i} onClick={() => emblaApi?.scrollTo(i)}
-                  className={`rounded-full transition-all duration-300 ${i === selectedIndex ? "w-6 h-2.5 bg-indigo-400" : "w-2.5 h-2.5 bg-[#333355] hover:bg-indigo-500/50"}`}
+                  className={`rounded-full transition-all duration-300 ${i === selectedIndex ? "w-6 h-2.5 bg-cyan-400" : "w-2.5 h-2.5 bg-[#333355] hover:bg-cyan-500/50"}`}
                   aria-label={`Go to slide ${i + 1}`}
                 />
               ))}
             </div>
-            <button onClick={scrollNext} className="w-11 h-11 glass border border-indigo-500/25 rounded-xl flex items-center justify-center text-[#8888aa] hover:text-indigo-300 hover:border-indigo-500/55 transition-all active:scale-95" aria-label="Next">
+            <button onClick={scrollNext} className="w-11 h-11 glass border border-cyan-500/25 rounded-xl flex items-center justify-center text-[#8888aa] hover:text-cyan-300 hover:border-cyan-500/55 transition-all active:scale-95" aria-label="Next">
               <ChevronRight className="w-5 h-5" />
             </button>
           </div>
 
-          <p className="text-center text-xs text-[#555577] mt-4 sm:hidden">Swipe to explore more reviews</p>
+          <p className="text-center text-xs text-[#555577] mt-4 sm:hidden">Swipe to see more</p>
         </div>
       </section>
 
-      {activeModal && <InternVideoModal video={activeModal} onClose={() => setActiveModal(null)} />}
+      {activeModal && <ClientVideoModal video={activeModal} onClose={() => setActiveModal(null)} />}
     </>
   )
 }

@@ -1,13 +1,13 @@
 "use client"
 
-import { Zap, Github, Twitter, Linkedin, Mail } from "lucide-react"
+import { Zap, Github, Linkedin, Mail, Phone } from "lucide-react"
 
 const LINKS = {
   Programs: [
-    { label: "Industry Dev Track", href: "#programs" },
-    { label: "College Grad Track", href: "#programs" },
-    { label: "Apply Now", href: "#apply" },
-    { label: "Cohort Schedule", href: "#" },
+    { label: "Apply as Engineer", href: "/apply" },
+    { label: "Submit a Project", href: "/project" },
+    { label: "How It Works", href: "#how-it-works" },
+    { label: "Cohort Schedule", href: "#programs" },
   ],
   "What You'll Build": [
     { label: "AI Agents", href: "#ai-agents" },
@@ -18,14 +18,14 @@ const LINKS = {
   Company: [
     { label: "About Champspace", href: "#" },
     { label: "Our Team", href: "#" },
-    { label: "Blog", href: "#" },
-    { label: "Careers", href: "#" },
+    { label: "GitHub", href: "https://github.com/immunesh" },
+    { label: "LinkedIn", href: "https://www.linkedin.com/company/110208947/" },
   ],
-  Resources: [
-    { label: "Documentation", href: "#" },
-    { label: "Learning Path", href: "#journey" },
-    { label: "FAQs", href: "#" },
-    { label: "Contact Us", href: "mailto:hello@champspace.io" },
+  Legal: [
+    { label: "Privacy Policy", href: "/privacy" },
+    { label: "Terms & Conditions", href: "/terms" },
+    { label: "Contact Us", href: "mailto:champspace6@gmail.com" },
+    { label: "WhatsApp", href: "https://wa.me/919027396563" },
   ],
 }
 
@@ -47,16 +47,16 @@ export default function Footer() {
               </span>
             </div>
             <p className="text-[#8888aa] text-sm leading-relaxed mb-5 max-w-xs">
-              AI software & automation internship program. Building the next generation of AI engineers, one project at a time.
+              AI software & automation development company. Building real-world AI products and creating career opportunities for engineers.
             </p>
             <div className="flex items-center gap-2">
               {[
-                { icon: Github,   href: "#",   label: "GitHub" },
-                { icon: Twitter,  href: "#",   label: "Twitter" },
-                { icon: Linkedin, href: "#",   label: "LinkedIn" },
-                { icon: Mail,     href: "mailto:hello@champspace.io", label: "Email" },
+                { icon: Github,   href: "https://github.com/immunesh",                          label: "GitHub" },
+                { icon: Linkedin, href: "https://www.linkedin.com/company/110208947/",          label: "LinkedIn" },
+                { icon: Mail,     href: "mailto:champspace6@gmail.com",                         label: "Email" },
+                { icon: Phone,    href: "https://wa.me/919027396563",                           label: "WhatsApp" },
               ].map(({ icon: Icon, href, label }) => (
-                <a key={label} href={href}
+                <a key={label} href={href} target={href.startsWith("http") ? "_blank" : undefined} rel="noopener noreferrer"
                   className="w-9 h-9 glass border border-indigo-500/20 rounded-lg flex items-center justify-center text-[#8888aa] hover:text-indigo-300 hover:border-indigo-500/50 transition-all"
                   aria-label={label}>
                   <Icon className="w-4 h-4" />
@@ -73,6 +73,8 @@ export default function Footer() {
                 {items.map((item) => (
                   <li key={item.label}>
                     <a href={item.href}
+                      target={item.href.startsWith("http") ? "_blank" : undefined}
+                      rel="noopener noreferrer"
                       className="text-[#8888aa] text-sm hover:text-indigo-300 transition-colors">
                       {item.label}
                     </a>
@@ -90,11 +92,9 @@ export default function Footer() {
             © {new Date().getFullYear()} Champspace. All rights reserved.
           </p>
           <div className="flex items-center gap-5">
-            {["Privacy Policy", "Terms of Service", "Cookie Policy"].map((item) => (
-              <a key={item} href="#" className="text-[#8888aa] text-xs hover:text-indigo-300 transition-colors">
-                {item}
-              </a>
-            ))}
+            <a href="/privacy" className="text-[#8888aa] text-xs hover:text-indigo-300 transition-colors">Privacy Policy</a>
+            <a href="/terms"   className="text-[#8888aa] text-xs hover:text-indigo-300 transition-colors">Terms & Conditions</a>
+            <a href="mailto:champspace6@gmail.com" className="text-[#8888aa] text-xs hover:text-indigo-300 transition-colors">Contact</a>
           </div>
         </div>
       </div>

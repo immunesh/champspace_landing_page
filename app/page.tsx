@@ -5,7 +5,7 @@ import AIAgents from "@/components/sections/ai-agents"
 import Automation from "@/components/sections/automation"
 import Journey from "@/components/sections/journey"
 import Projects from "@/components/sections/projects"
-import Testimonials from "@/components/sections/testimonials"
+import ClientVideoTestimonials from "@/components/sections/client-video-testimonials"
 import VideoReviews from "@/components/sections/video-reviews"
 import FinalCTA from "@/components/sections/final-cta"
 import Footer from "@/components/sections/footer"
@@ -20,7 +20,7 @@ export default function Home() {
       <Automation />
       <Journey />
       <Projects />
-      <Testimonials />
+      <ClientVideoTestimonials />
       <VideoReviews />
       <FinalCTA />
       <Footer />

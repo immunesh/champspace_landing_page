@@ -58,7 +58,7 @@ export default function Automation() {
             <span className="gradient-text-cyan">While You Sleep</span>
           </h2>
           <p className="text-[#8888aa] text-lg max-w-2xl mx-auto">
-            Interns design and deploy automation systems that handle real business problems — saving companies thousands of hours per year.
+            Engineers design and deploy automation systems that handle real business problems — saving companies thousands of hours per year.
           </p>
         </div>
 

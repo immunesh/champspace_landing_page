@@ -7,6 +7,7 @@ import {
   Smartphone, Database, Layers, User, Mail, Phone, Building2,
   MessageSquare, Calendar, DollarSign, FileText, Paperclip, AlertCircle, PenLine,
 } from "lucide-react"
+import { saveProject } from "@/lib/form-store"
 
 const PROJECT_TYPES = [
   { id: "ai-agent",   icon: Bot,        label: "AI Agent / LLM App",  desc: "Chatbots, autonomous agents, RAG systems" },
@@ -45,6 +46,11 @@ export default function ProjectPage() {
   const [otherType, setOtherType]       = useState("")
   const [submitted, setSubmitted]       = useState(false)
   const [step, setStep]                 = useState(1)
+  const [projectName, setProjectName]   = useState("")
+  const [description, setDescription]  = useState("")
+  const [features, setFeatures]        = useState("")
+  const [budget, setBudget]            = useState("")
+  const [timeline, setTimeline]        = useState("")
 
   const [fields, setFields] = useState<Fields>({
     name: "", email: "", phone: "", company: "", teamSize: "", industry: "", website: "",
@@ -267,30 +273,30 @@ export default function ProjectPage() {
               <div className="space-y-4">
                 <div>
                   <label className="text-xs text-[#8888aa] font-medium mb-1.5 flex items-center gap-1.5"><FileText className="w-3.5 h-3.5" /> Project Name / Title</label>
-                  <input type="text" placeholder="e.g. Customer Support AI Agent for my e-commerce store"
+                  <input type="text" value={projectName} onChange={(e) => setProjectName(e.target.value)} placeholder="e.g. Customer Support AI Agent for my e-commerce store"
                     className="w-full glass border border-cyan-500/20 rounded-xl px-4 py-3 text-sm text-white placeholder-[#555577] focus:outline-none focus:border-cyan-500/55 transition-colors" />
                 </div>
                 <div>
                   <label className="text-xs text-[#8888aa] font-medium mb-1.5 flex items-center gap-1.5"><MessageSquare className="w-3.5 h-3.5" /> Project Description</label>
-                  <textarea rows={4} placeholder="Describe what you want to build, the problem it solves, who the end users are, and any specific requirements..."
+                  <textarea rows={4} value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Describe what you want to build, the problem it solves, who the end users are, and any specific requirements..."
                     className="w-full glass border border-cyan-500/20 rounded-xl px-4 py-3 text-sm text-white placeholder-[#555577] focus:outline-none focus:border-cyan-500/55 transition-colors resize-none" />
                 </div>
                 <div>
                   <label className="text-xs text-[#8888aa] font-medium mb-1.5 block">Key Features / Functionality</label>
-                  <textarea rows={3} placeholder="List the must-have features. e.g. — User login, AI chatbot, dashboard, PDF export..."
+                  <textarea rows={3} value={features} onChange={(e) => setFeatures(e.target.value)} placeholder="List the must-have features. e.g. — User login, AI chatbot, dashboard, PDF export..."
                     className="w-full glass border border-cyan-500/20 rounded-xl px-4 py-3 text-sm text-white placeholder-[#555577] focus:outline-none focus:border-cyan-500/55 transition-colors resize-none" />
                 </div>
                 <div className="grid sm:grid-cols-2 gap-4">
                   <div>
                     <label className="text-xs text-[#8888aa] font-medium mb-1.5 flex items-center gap-1.5"><DollarSign className="w-3.5 h-3.5" /> Budget Range</label>
-                    <select className="w-full glass border border-cyan-500/20 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-cyan-500/55 transition-colors bg-transparent cursor-pointer">
+                    <select value={budget} onChange={(e) => setBudget(e.target.value)} className="w-full glass border border-cyan-500/20 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-cyan-500/55 transition-colors bg-transparent cursor-pointer">
                       <option value="" className="bg-[#0d0d21]">Select budget...</option>
                       {BUDGETS.map((b) => <option key={b} value={b} className="bg-[#0d0d21]">{b}</option>)}
                     </select>
                   </div>
                   <div>
                     <label className="text-xs text-[#8888aa] font-medium mb-1.5 flex items-center gap-1.5"><Calendar className="w-3.5 h-3.5" /> Timeline / Deadline</label>
-                    <select className="w-full glass border border-cyan-500/20 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-cyan-500/55 transition-colors bg-transparent cursor-pointer">
+                    <select value={timeline} onChange={(e) => setTimeline(e.target.value)} className="w-full glass border border-cyan-500/20 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-cyan-500/55 transition-colors bg-transparent cursor-pointer">
                       <option value="" className="bg-[#0d0d21]">Select timeline...</option>
                       {TIMELINES.map((t) => <option key={t} value={t} className="bg-[#0d0d21]">{t}</option>)}
                     </select>
@@ -332,7 +338,17 @@ export default function ProjectPage() {
 
               <div className="flex gap-3 mt-6">
                 <button onClick={() => setStep(2)} className="flex-1 border border-cyan-500/25 text-cyan-300 font-semibold py-3.5 rounded-xl hover:bg-cyan-500/8 transition-all">Back</button>
-                <button onClick={() => setSubmitted(true)}
+                <button onClick={() => {
+                    saveProject({
+                      projectType: selectedType === "others" && otherType.trim()
+                        ? otherType.trim()
+                        : PROJECT_TYPES.find((p) => p.id === selectedType)?.label ?? selectedType,
+                      otherType,
+                      ...fields,
+                      projectName, description, features, budget, timeline,
+                    })
+                    setSubmitted(true)
+                  }}
                   className="flex-[2] inline-flex items-center justify-center gap-2 font-bold py-4 rounded-xl text-white"
                   style={{ background: "linear-gradient(135deg, #06b6d4, #6366f1)" }}>
                   <span>Submit Project Brief</span><ArrowRight className="w-4 h-4" />

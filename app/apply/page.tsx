@@ -7,6 +7,7 @@ import {
   Linkedin, Globe, Code2, Brain, Layers, Server, Cloud, Wrench, BarChart3,
   Briefcase, GraduationCap, Upload, AlertCircle, PenLine,
 } from "lucide-react"
+import { saveApplication } from "@/lib/form-store"
 
 const DEPARTMENTS = [
   { id: "ai-ml",      icon: Brain,     label: "AI / ML Engineering",   desc: "LLM agents, RAG systems, model training" },
@@ -49,6 +50,10 @@ export default function ApplyPage() {
   const [otherDept, setOtherDept] = useState("")
   const [submitted, setSubmitted] = useState(false)
   const [step, setStep] = useState(1)
+  const [experience, setExperience] = useState("")
+  const [availability, setAvailability] = useState("")
+  const [bio, setBio] = useState("")
+  const [projectDesc, setProjectDesc] = useState("")
 
   const [fields, setFields] = useState<Fields>({
     name: "", email: "", phone: "", location: "",
@@ -270,14 +275,14 @@ export default function ApplyPage() {
                 <div className="grid sm:grid-cols-2 gap-4">
                   <div>
                     <label className="text-xs text-[#8888aa] font-medium mb-1.5 block">Experience Level</label>
-                    <select className="w-full glass border border-indigo-500/20 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-indigo-500/55 transition-colors bg-transparent cursor-pointer">
+                    <select value={experience} onChange={(e) => setExperience(e.target.value)} className="w-full glass border border-indigo-500/20 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-indigo-500/55 transition-colors bg-transparent cursor-pointer">
                       <option value="" className="bg-[#0d0d21]">Select level...</option>
                       {EXPERIENCE_LEVELS.map((l) => <option key={l} value={l} className="bg-[#0d0d21]">{l}</option>)}
                     </select>
                   </div>
                   <div>
                     <label className="text-xs text-[#8888aa] font-medium mb-1.5 block">Availability to Start</label>
-                    <select className="w-full glass border border-indigo-500/20 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-indigo-500/55 transition-colors bg-transparent cursor-pointer">
+                    <select value={availability} onChange={(e) => setAvailability(e.target.value)} className="w-full glass border border-indigo-500/20 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-indigo-500/55 transition-colors bg-transparent cursor-pointer">
                       <option value="" className="bg-[#0d0d21]">Select availability...</option>
                       {AVAILABILITY.map((a) => <option key={a} value={a} className="bg-[#0d0d21]">{a}</option>)}
                     </select>
@@ -285,12 +290,12 @@ export default function ApplyPage() {
                 </div>
                 <div>
                   <label className="text-xs text-[#8888aa] font-medium mb-1.5 block">Tell us about yourself & why Champspace</label>
-                  <textarea rows={4} placeholder="Your background, what you've built, and why you want to join Champspace..."
+                  <textarea rows={4} value={bio} onChange={(e) => setBio(e.target.value)} placeholder="Your background, what you've built, and why you want to join Champspace..."
                     className="w-full glass border border-indigo-500/20 rounded-xl px-4 py-3 text-sm text-white placeholder-[#555577] focus:outline-none focus:border-indigo-500/55 transition-colors resize-none" />
                 </div>
                 <div>
                   <label className="text-xs text-[#8888aa] font-medium mb-1.5 block">Share a project or work you're proud of</label>
-                  <textarea rows={3} placeholder="Describe a project you've built — what it does, the tech stack, your role, and the impact..."
+                  <textarea rows={3} value={projectDesc} onChange={(e) => setProjectDesc(e.target.value)} placeholder="Describe a project you've built — what it does, the tech stack, your role, and the impact..."
                     className="w-full glass border border-indigo-500/20 rounded-xl px-4 py-3 text-sm text-white placeholder-[#555577] focus:outline-none focus:border-indigo-500/55 transition-colors resize-none" />
                 </div>
                 <div>
@@ -318,7 +323,13 @@ export default function ApplyPage() {
               </div>
               <div className="flex gap-3 mt-6">
                 <button onClick={() => setStep(2)} className="btn-outline flex-1 text-indigo-300 font-semibold py-3.5 rounded-xl">Back</button>
-                <button onClick={() => setSubmitted(true)}
+                <button onClick={() => {
+                    saveApplication({
+                      positionType, departments: selectedDepts, otherDept,
+                      ...fields, experience, availability, bio, projectDesc,
+                    })
+                    setSubmitted(true)
+                  }}
                   className="btn-primary flex-[2] inline-flex items-center justify-center gap-2 text-white font-bold py-4 rounded-xl">
                   <span>Submit Application</span>
                   <ArrowRight className="w-4 h-4" style={{ position: "relative", zIndex: 1 }} />

@@ -71,7 +71,7 @@ export default function AIAgents() {
             <span className="gradient-text">Real Impact.</span>
           </h2>
           <p className="text-[#8888aa] text-lg max-w-2xl mx-auto">
-            Every intern at Champspace ships at least one AI agent to production. Here's what you'll build.
+            Build real-world impact from day one. Every Champspace engineer deploys an AI agent to production.
           </p>
         </div>
 

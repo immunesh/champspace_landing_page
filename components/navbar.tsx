@@ -57,10 +57,10 @@ export default function Navbar() {
         {/* CTA */}
         <div className="hidden md:flex items-center gap-3">
           <a
-            href="#apply"
+            href="#contact"
             className="btn-primary text-white font-semibold text-sm px-5 py-2.5 rounded-xl"
           >
-            <span>Apply Now</span>
+            <span>Contact Us</span>
           </a>
         </div>
 
@@ -89,11 +89,11 @@ export default function Navbar() {
               </a>
             ))}
             <a
-              href="#apply"
+              href="#contact"
               onClick={() => setOpen(false)}
               className="mt-2 btn-primary text-white font-semibold text-sm px-5 py-3 rounded-xl text-center"
             >
-              <span>Apply Now</span>
+              <span>Contact Us</span>
             </a>
           </div>
         </div>
