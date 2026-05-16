@@ -5,7 +5,7 @@ import Link from "next/link"
 import {
   ArrowLeft, ArrowRight, CheckCircle2, Zap, User, Mail, Phone, Github,
   Linkedin, Globe, Code2, Brain, Layers, Server, Cloud, Wrench, BarChart3,
-  Briefcase, GraduationCap, Upload, AlertCircle,
+  Briefcase, GraduationCap, Upload, AlertCircle, PenLine,
 } from "lucide-react"
 
 const DEPARTMENTS = [
@@ -16,6 +16,7 @@ const DEPARTMENTS = [
   { id: "devops",     icon: Cloud,     label: "DevOps / Cloud",         desc: "AWS, GCP, Docker, CI/CD pipelines" },
   { id: "data",       icon: BarChart3, label: "Data Engineering",       desc: "Pipelines, analytics, data products" },
   { id: "fullstack",  icon: Layers,    label: "Full Stack Development", desc: "End-to-end product engineering" },
+  { id: "others",     icon: Layers,    label: "Others",                 desc: "Something else — tell us more" },
 ]
 
 const EXPERIENCE_LEVELS = ["0–1 year (Fresher)", "1–2 years", "2–4 years", "4–7 years", "7+ years"]
@@ -45,6 +46,7 @@ function validate(f: Fields): Errors {
 export default function ApplyPage() {
   const [positionType, setPositionType] = useState<"intern" | "fulltime">("intern")
   const [selectedDepts, setSelectedDepts] = useState<string[]>([])
+  const [otherDept, setOtherDept] = useState("")
   const [submitted, setSubmitted] = useState(false)
   const [step, setStep] = useState(1)
 
@@ -154,24 +156,52 @@ export default function ApplyPage() {
               </div>
 
               <h3 className="text-white font-semibold mb-3">Select Department(s) <span className="text-[#8888aa] font-normal text-sm">(pick all that apply)</span></h3>
-              <div className="grid sm:grid-cols-2 gap-3 mb-8">
-                {DEPARTMENTS.map(({ id, icon: Icon, label, desc }) => {
+              <div className="grid sm:grid-cols-2 gap-3 mb-3">
+                {DEPARTMENTS.map(({ id, label, desc }) => {
                   const active = selectedDepts.includes(id)
+                  const isOthers = id === "others"
+                  const Icon = isOthers ? PenLine : DEPARTMENTS.find((d) => d.id === id)!.icon
                   return (
                     <button key={id} onClick={() => toggleDept(id)}
-                      className={`p-4 rounded-xl border text-left transition-all flex items-start gap-3 ${active ? "border-indigo-500/55 bg-indigo-500/10" : "border-indigo-500/12 bg-[#0a0a18] hover:border-indigo-500/30"}`}>
-                      <div className={`w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 ${active ? "bg-indigo-500/20" : "bg-[#13132a]"}`}>
-                        <Icon className={`w-4 h-4 ${active ? "text-indigo-400" : "text-[#8888aa]"}`} />
+                      className={`p-4 rounded-xl border text-left transition-all flex items-start gap-3 ${
+                        active
+                          ? isOthers
+                            ? "border-purple-500/55 bg-purple-500/10"
+                            : "border-indigo-500/55 bg-indigo-500/10"
+                          : "border-indigo-500/12 bg-[#0a0a18] hover:border-indigo-500/30"
+                      }`}>
+                      <div className={`w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 ${
+                        active ? (isOthers ? "bg-purple-500/20" : "bg-indigo-500/20") : "bg-[#13132a]"
+                      }`}>
+                        <Icon className={`w-4 h-4 ${active ? (isOthers ? "text-purple-400" : "text-indigo-400") : "text-[#8888aa]"}`} />
                       </div>
                       <div>
                         <div className={`text-sm font-semibold ${active ? "text-white" : "text-[#aaaacc]"}`}>{label}</div>
                         <div className="text-xs text-[#8888aa] mt-0.5">{desc}</div>
                       </div>
-                      {active && <CheckCircle2 className="w-4 h-4 text-indigo-400 ml-auto mt-0.5 flex-shrink-0" />}
+                      {active && <CheckCircle2 className={`w-4 h-4 ml-auto mt-0.5 flex-shrink-0 ${isOthers ? "text-purple-400" : "text-indigo-400"}`} />}
                     </button>
                   )
                 })}
               </div>
+
+              {/* Others custom input */}
+              {selectedDepts.includes("others") && (
+                <div className="mb-5 border border-purple-500/30 bg-purple-500/5 rounded-xl p-4">
+                  <label className="text-xs text-purple-300 font-medium mb-2 flex items-center gap-1.5">
+                    <PenLine className="w-3.5 h-3.5" /> Describe your area of interest
+                  </label>
+                  <input
+                    type="text"
+                    value={otherDept}
+                    onChange={(e) => setOtherDept(e.target.value)}
+                    placeholder="e.g. UI/UX Design, Blockchain, Embedded Systems, Game Development..."
+                    className="w-full bg-transparent border border-purple-500/25 rounded-xl px-4 py-3 text-sm text-white placeholder-[#555577] focus:outline-none focus:border-purple-500/60 transition-colors"
+                  />
+                </div>
+              )}
+
+              <div className="mb-3" />
 
               <button onClick={() => setStep(2)} disabled={selectedDepts.length === 0}
                 className="btn-primary w-full inline-flex items-center justify-center gap-2 text-white font-bold py-4 rounded-xl disabled:opacity-40 disabled:cursor-not-allowed">
@@ -278,7 +308,11 @@ export default function ApplyPage() {
                   <div className="text-xs text-[#8888aa] mb-2 font-medium">Your application summary</div>
                   <div className="flex flex-wrap gap-2">
                     <span className="tag">{positionType === "intern" ? "Internship" : "Full-Time"}</span>
-                    {selectedDepts.map((d) => <span key={d} className="tag">{DEPARTMENTS.find((x) => x.id === d)?.label}</span>)}
+                    {selectedDepts.map((d) => (
+                      <span key={d} className="tag">
+                        {d === "others" && otherDept.trim() ? otherDept.trim() : DEPARTMENTS.find((x) => x.id === d)?.label}
+                      </span>
+                    ))}
                   </div>
                 </div>
               </div>

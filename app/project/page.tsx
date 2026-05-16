@@ -5,7 +5,7 @@ import Link from "next/link"
 import {
   ArrowLeft, ArrowRight, CheckCircle2, Sparkles, Bot, Workflow, Globe,
   Smartphone, Database, Layers, User, Mail, Phone, Building2,
-  MessageSquare, Calendar, DollarSign, FileText, Paperclip, AlertCircle,
+  MessageSquare, Calendar, DollarSign, FileText, Paperclip, AlertCircle, PenLine,
 } from "lucide-react"
 
 const PROJECT_TYPES = [
@@ -15,6 +15,7 @@ const PROJECT_TYPES = [
   { id: "mobile-app", icon: Smartphone, label: "Mobile Application",   desc: "iOS & Android apps, cross-platform" },
   { id: "data",       icon: Database,   label: "Data Product",         desc: "Pipelines, analytics, BI dashboards" },
   { id: "custom",     icon: Layers,     label: "Custom Software",      desc: "Something unique — let's talk" },
+  { id: "others",     icon: PenLine,    label: "Others",               desc: "Something different — tell us more" },
 ]
 
 const BUDGETS   = ["Under ₹1 Lakh", "₹1L – ₹5L", "₹5L – ₹15L", "₹15L – ₹50L", "₹50L+", "Let's discuss"]
@@ -41,6 +42,7 @@ function validate(f: Fields): Errors {
 
 export default function ProjectPage() {
   const [selectedType, setSelectedType] = useState("")
+  const [otherType, setOtherType]       = useState("")
   const [submitted, setSubmitted]       = useState(false)
   const [step, setStep]                 = useState(1)
 
@@ -139,25 +141,52 @@ export default function ProjectPage() {
           {step === 1 && (
             <div>
               <h2 className="text-xl font-bold text-white mb-6">What are you looking to build?</h2>
-              <div className="grid sm:grid-cols-2 gap-3 mb-8">
+              <div className="grid sm:grid-cols-2 gap-3 mb-3">
                 {PROJECT_TYPES.map(({ id, icon: Icon, label, desc }) => {
                   const active = selectedType === id
+                  const isOthers = id === "others"
                   return (
                     <button key={id} onClick={() => setSelectedType(id)}
-                      className={`p-4 rounded-xl border text-left transition-all flex items-start gap-3 ${active ? "border-cyan-500/55 bg-cyan-500/10" : "border-cyan-500/12 bg-[#0a0a18] hover:border-cyan-500/30"}`}>
-                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${active ? "bg-cyan-500/20" : "bg-[#13132a]"}`}>
-                        <Icon className={`w-5 h-5 ${active ? "text-cyan-400" : "text-[#8888aa]"}`} />
+                      className={`p-4 rounded-xl border text-left transition-all flex items-start gap-3 ${
+                        active
+                          ? isOthers
+                            ? "border-purple-500/55 bg-purple-500/10"
+                            : "border-cyan-500/55 bg-cyan-500/10"
+                          : "border-cyan-500/12 bg-[#0a0a18] hover:border-cyan-500/30"
+                      }`}>
+                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${
+                        active ? (isOthers ? "bg-purple-500/20" : "bg-cyan-500/20") : "bg-[#13132a]"
+                      }`}>
+                        <Icon className={`w-5 h-5 ${active ? (isOthers ? "text-purple-400" : "text-cyan-400") : "text-[#8888aa]"}`} />
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className={`text-sm font-semibold ${active ? "text-white" : "text-[#aaaacc]"}`}>{label}</div>
                         <div className="text-xs text-[#8888aa] mt-0.5">{desc}</div>
                       </div>
-                      {active && <CheckCircle2 className="w-4 h-4 text-cyan-400 mt-0.5 flex-shrink-0" />}
+                      {active && <CheckCircle2 className={`w-4 h-4 mt-0.5 flex-shrink-0 ${isOthers ? "text-purple-400" : "text-cyan-400"}`} />}
                     </button>
                   )
                 })}
               </div>
-              <button onClick={() => setStep(2)} disabled={!selectedType}
+
+              {/* Others custom input */}
+              {selectedType === "others" && (
+                <div className="mb-5 border border-purple-500/30 bg-purple-500/5 rounded-xl p-4">
+                  <label className="text-xs text-purple-300 font-medium mb-2 flex items-center gap-1.5">
+                    <PenLine className="w-3.5 h-3.5" /> Describe your project type
+                  </label>
+                  <input
+                    type="text"
+                    value={otherType}
+                    onChange={(e) => setOtherType(e.target.value)}
+                    placeholder="e.g. IoT dashboard, AR/VR app, blockchain tool, desktop software..."
+                    className="w-full bg-transparent border border-purple-500/25 rounded-xl px-4 py-3 text-sm text-white placeholder-[#555577] focus:outline-none focus:border-purple-500/60 transition-colors"
+                  />
+                </div>
+              )}
+
+              <div className="mb-1" />
+              <button onClick={() => setStep(2)} disabled={!selectedType || (selectedType === "others" && !otherType.trim())}
                 className="w-full inline-flex items-center justify-center gap-2 font-bold py-4 rounded-xl text-white transition-all disabled:opacity-40 disabled:cursor-not-allowed"
                 style={{ background: "linear-gradient(135deg, #06b6d4, #6366f1)" }}>
                 <span>Continue</span><ArrowRight className="w-4 h-4" />
@@ -292,7 +321,9 @@ export default function ProjectPage() {
                   <div className="text-xs text-[#8888aa] mb-2 font-medium">Your project brief summary</div>
                   <div className="flex flex-wrap gap-2">
                     <span className="text-xs px-2.5 py-1 rounded-full border font-medium bg-cyan-500/10 border-cyan-500/25 text-cyan-300">
-                      {PROJECT_TYPES.find((p) => p.id === selectedType)?.label ?? selectedType}
+                      {selectedType === "others" && otherType.trim()
+                        ? otherType.trim()
+                        : PROJECT_TYPES.find((p) => p.id === selectedType)?.label ?? selectedType}
                     </span>
                     {fields.company && <span className="text-xs px-2.5 py-1 rounded-full border font-medium bg-indigo-500/10 border-indigo-500/25 text-indigo-300">{fields.company}</span>}
                   </div>
