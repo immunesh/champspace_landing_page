@@ -8,6 +8,7 @@ import {
   MessageSquare, Calendar, DollarSign, FileText, Paperclip, AlertCircle, PenLine,
 } from "lucide-react"
 import { saveProject } from "@/lib/form-store"
+import { submitToSheets } from "@/lib/sheets"
 
 const PROJECT_TYPES = [
   { id: "ai-agent",   icon: Bot,        label: "AI Agent / LLM App",  desc: "Chatbots, autonomous agents, RAG systems" },
@@ -339,12 +340,16 @@ export default function ProjectPage() {
               <div className="flex gap-3 mt-6">
                 <button onClick={() => setStep(2)} className="flex-1 border border-cyan-500/25 text-cyan-300 font-semibold py-3.5 rounded-xl hover:bg-cyan-500/8 transition-all">Back</button>
                 <button onClick={() => {
+                    const resolvedType = selectedType === "others" && otherType.trim()
+                      ? otherType.trim()
+                      : PROJECT_TYPES.find((p) => p.id === selectedType)?.label ?? selectedType
                     saveProject({
-                      projectType: selectedType === "others" && otherType.trim()
-                        ? otherType.trim()
-                        : PROJECT_TYPES.find((p) => p.id === selectedType)?.label ?? selectedType,
-                      otherType,
+                      projectType: resolvedType, otherType,
+                      ...fields, projectName, description, features, budget, timeline,
+                    })
+                    submitToSheets("project", {
                       ...fields,
+                      projectType: resolvedType,
                       projectName, description, features, budget, timeline,
                     })
                     setSubmitted(true)

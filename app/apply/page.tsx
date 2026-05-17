@@ -8,6 +8,7 @@ import {
   Briefcase, GraduationCap, Upload, AlertCircle, PenLine,
 } from "lucide-react"
 import { saveApplication } from "@/lib/form-store"
+import { submitToSheets } from "@/lib/sheets"
 
 const DEPARTMENTS = [
   { id: "ai-ml",      icon: Brain,     label: "AI / ML Engineering",   desc: "LLM agents, RAG systems, model training" },
@@ -324,9 +325,16 @@ export default function ApplyPage() {
               <div className="flex gap-3 mt-6">
                 <button onClick={() => setStep(2)} className="btn-outline flex-1 text-indigo-300 font-semibold py-3.5 rounded-xl">Back</button>
                 <button onClick={() => {
-                    saveApplication({
+                    const payload = {
                       positionType, departments: selectedDepts, otherDept,
                       ...fields, experience, availability, bio, projectDesc,
+                    }
+                    saveApplication(payload)
+                    submitToSheets("application", {
+                      ...fields,
+                      positionType,
+                      departments: selectedDepts.join(", "),
+                      otherDept, experience, availability, bio, projectDesc,
                     })
                     setSubmitted(true)
                   }}

@@ -4,6 +4,7 @@ import { useState } from "react"
 import { useIntersection } from "@/hooks/use-intersection"
 import { ArrowRight, Mail, Linkedin, Github, Sparkles, Phone, CheckCircle2 } from "lucide-react"
 import { saveContact } from "@/lib/form-store"
+import { submitToSheets } from "@/lib/sheets"
 
 export default function FinalCTA() {
   const { ref, isVisible } = useIntersection()
@@ -15,6 +16,7 @@ export default function FinalCTA() {
 
   const handleSend = () => {
     saveContact({ name, email, subject, message })
+    submitToSheets("contact", { name, email, subject, message })
     setSent(true)
   }
 

@@ -281,7 +281,7 @@ export default function AdminPage() {
   // ── Login screen ──────────────────────────────────────────────────────────
   if (!authed) {
     return (
-      <div className="min-h-screen flex items-center justify-center px-4" style={{ background: "#05050f" }}>
+      <div className="min-h-screen flex items-center justify-center px-4 pt-16" style={{ background: "#05050f" }}>
         <div className="w-full max-w-sm">
           <div className="text-center mb-8">
             <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center mx-auto mb-4 glow-indigo">
@@ -321,9 +321,9 @@ export default function AdminPage() {
 
   // ── Dashboard ─────────────────────────────────────────────────────────────
   return (
-    <div className="min-h-screen" style={{ background: "#05050f" }}>
+    <div className="min-h-screen pt-16" style={{ background: "#05050f" }}>
       {/* Header */}
-      <div className="border-b border-indigo-500/10 px-4 py-3 sticky top-0 z-40 glass-strong">
+      <div className="border-b border-indigo-500/10 px-4 py-3 sticky top-16 z-40 glass-strong">
         <div className="max-w-6xl mx-auto flex items-center justify-between gap-4">
           <div className="flex items-center gap-2">
             <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
