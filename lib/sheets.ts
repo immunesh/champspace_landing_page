@@ -1,15 +1,9 @@
 // Submit form data to Google Sheets via a deployed Apps Script web app.
-// Set NEXT_PUBLIC_SHEETS_URL in .env.local to your Apps Script deployment URL.
-
-const SCRIPT_URL = process.env.NEXT_PUBLIC_SHEETS_URL ?? ""
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwXVN0X7OevRjzJMVeV4trZ1InPUsVMUzNU7Sq9oOe_1NEpoHE1kzVWW0T0bKR6940/exec"
 
 export type SheetForm = "application" | "project" | "contact"
 
 export async function submitToSheets(formType: SheetForm, data: Record<string, string>) {
-  if (!SCRIPT_URL) {
-    console.warn("NEXT_PUBLIC_SHEETS_URL not set — skipping Google Sheets submission.")
-    return
-  }
   try {
     // mode: no-cors avoids CORS preflight errors with Apps Script.
     // We cannot read the response body in no-cors mode, but the data is received.
