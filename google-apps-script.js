@@ -7,13 +7,21 @@
  * 3. Open Extensions → Apps Script.
  * 4. Delete the default code and paste ALL of this file.
  * 5. Click Save (Ctrl+S).
- * 6. Click Deploy → New deployment.
- * 7. Type: Web app
- * 8. Execute as: Me
- * 9. Who has access: Anyone
- * 10. Click Deploy → Authorize → Allow.
- * 11. Copy the Web App URL and paste it into your .env.local:
- *       NEXT_PUBLIC_SHEETS_URL=https://script.google.com/macros/s/YOUR_ID/exec
+ * 6. Enable the Drive Advanced Service:
+ *    - Click the "+" next to "Services" in the left sidebar.
+ *    - Find "Google Drive API", select it, and click Add.
+ *    (This is required for DOC/DOCX → PDF conversion.)
+ * 7. Click Deploy → New deployment (or "Manage deployments" → edit existing → new version).
+ * 8. Type: Web app
+ * 9. Execute as: Me
+ * 10. Who has access: Anyone
+ * 11. Click Deploy → Authorize → Allow.
+ *     IMPORTANT: When prompted, grant ALL requested permissions including Google Drive access.
+ * 12. Copy the Web App URL and paste it into your .env.local:
+ *        NEXT_PUBLIC_SHEETS_URL=https://script.google.com/macros/s/YOUR_ID/exec
+ *
+ * NOTE: Every time you edit this script you must create a NEW deployment version
+ * (Deploy → Manage deployments → edit → new version) for changes to take effect.
  */
 
 // ─── Sheet names ────────────────────────────────────────────────────────────
@@ -29,7 +37,7 @@ var HEADERS = {
     "Submitted At", "Name", "Email", "Phone", "Location",
     "Position Type", "Departments", "Other Department",
     "GitHub", "LinkedIn", "Portfolio", "College", "Skills",
-    "Experience", "Availability", "Bio", "Project Description",
+    "Experience", "Availability", "Bio", "Project Description", "Resume Link",
   ],
   project: [
     "Submitted At", "Name", "Email", "Phone", "Company",
@@ -40,6 +48,47 @@ var HEADERS = {
   contact: [
     "Submitted At", "Name", "Email", "Subject", "Message",
   ],
+}
+
+// ─── Mime type helper ─────────────────────────────────────────────────────────
+function getMimeType(filename) {
+  if (!filename) return "application/octet-stream"
+  if (filename.match(/\.pdf$/i))  return "application/pdf"
+  if (filename.match(/\.docx$/i)) return "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+  if (filename.match(/\.doc$/i))  return "application/msword"
+  return "application/octet-stream"
+}
+
+// ─── Resume → PDF saver ───────────────────────────────────────────────────────
+// Saves the resume to the given Drive folder always as a PDF file.
+// If the uploaded file is already a PDF it is stored directly.
+// If it is a DOC/DOCX it is imported as a Google Doc then exported as PDF,
+// and the intermediate Google Doc is deleted.
+function saveResumeAsPdf(resumeBase64, resumeFileName, folder) {
+  var decoded  = Utilities.base64Decode(resumeBase64)
+  var mimeType = getMimeType(resumeFileName)
+  var baseName = resumeFileName.replace(/\.(pdf|docx?|doc)$/i, "")
+
+  if (mimeType === "application/pdf") {
+    var blob = Utilities.newBlob(decoded, "application/pdf", resumeFileName)
+    var file = folder.createFile(blob)
+    file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW)
+    return file.getUrl()
+  }
+
+  // DOC / DOCX: import as Google Doc so Drive converts it, then export as PDF.
+  // Requires the Drive Advanced Service (Drive API) to be enabled in the project.
+  var srcBlob  = Utilities.newBlob(decoded, mimeType, resumeFileName)
+  var imported = Drive.Files.insert(
+    { title: resumeFileName, mimeType: "application/vnd.google-apps.document", parents: [{ id: folder.getId() }] },
+    srcBlob
+  )
+  var pdfBlob = DriveApp.getFileById(imported.id).getAs(MimeType.PDF)
+  pdfBlob.setName(baseName + ".pdf")
+  var pdfFile = folder.createFile(pdfBlob)
+  pdfFile.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW)
+  DriveApp.getFileById(imported.id).setTrashed(true)
+  return pdfFile.getUrl()
 }
 
 // ─── Row builders ─────────────────────────────────────────────────────────────
@@ -63,6 +112,7 @@ function buildRow(formType, data, now) {
       data.availability|| "",
       data.bio         || "",
       data.projectDesc || "",
+      data.resumeLink  || "",
     ]
   }
 
@@ -122,6 +172,17 @@ function doPost(e) {
       headerRow.setBackground("#1a1a2e")
       headerRow.setFontColor("#a5b4fc")
       sheet.setFrozenRows(1)
+    }
+
+    // Save resume to Google Drive as PDF and store the link
+    if (formType === "application" && data.resumeBase64 && data.resumeFileName) {
+      try {
+        var folders = DriveApp.getFoldersByName("Champspace Resumes")
+        var folder  = folders.hasNext() ? folders.next() : DriveApp.createFolder("Champspace Resumes")
+        data.resumeLink = saveResumeAsPdf(data.resumeBase64, data.resumeFileName, folder)
+      } catch (fileErr) {
+        data.resumeLink = "Upload failed: " + fileErr.toString()
+      }
     }
 
     var now = Utilities.formatDate(new Date(), Session.getScriptTimeZone(), "yyyy-MM-dd HH:mm:ss")

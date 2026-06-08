@@ -50,11 +50,13 @@ export default function ApplyPage() {
   const [selectedDepts, setSelectedDepts] = useState<string[]>([])
   const [otherDept, setOtherDept] = useState("")
   const [submitted, setSubmitted] = useState(false)
+  const [submitting, setSubmitting] = useState(false)
   const [step, setStep] = useState(1)
   const [experience, setExperience] = useState("")
   const [availability, setAvailability] = useState("")
   const [bio, setBio] = useState("")
   const [projectDesc, setProjectDesc] = useState("")
+  const [resumeFile, setResumeFile] = useState<File | null>(null)
 
   const [fields, setFields] = useState<Fields>({
     name: "", email: "", phone: "", location: "",
@@ -301,13 +303,27 @@ export default function ApplyPage() {
                 </div>
                 <div>
                   <label className="text-xs text-[#8888aa] font-medium mb-1.5 block">Resume / CV</label>
-                  <label className="flex items-center gap-3 glass border border-dashed border-indigo-500/30 rounded-xl px-4 py-4 cursor-pointer hover:border-indigo-500/55 transition-colors">
-                    <Upload className="w-5 h-5 text-indigo-400 flex-shrink-0" />
-                    <div>
-                      <div className="text-sm text-indigo-300 font-medium">Click to upload resume</div>
-                      <div className="text-xs text-[#8888aa]">PDF or DOC, max 5MB</div>
+                  <label className={`flex items-center gap-3 glass border border-dashed rounded-xl px-4 py-4 cursor-pointer transition-colors ${resumeFile ? "border-emerald-500/50 bg-emerald-500/5 hover:border-emerald-500/70" : "border-indigo-500/30 hover:border-indigo-500/55"}`}>
+                    <Upload className={`w-5 h-5 flex-shrink-0 ${resumeFile ? "text-emerald-400" : "text-indigo-400"}`} />
+                    <div className="min-w-0">
+                      <div className={`text-sm font-medium truncate ${resumeFile ? "text-emerald-300" : "text-indigo-300"}`}>
+                        {resumeFile ? resumeFile.name : "Click to upload resume"}
+                      </div>
+                      <div className="text-xs text-[#8888aa]">
+                        {resumeFile ? `${(resumeFile.size / 1024 / 1024).toFixed(2)} MB` : "PDF or DOC, max 5MB"}
+                      </div>
                     </div>
-                    <input type="file" accept=".pdf,.doc,.docx" className="hidden" />
+                    {resumeFile && <CheckCircle2 className="w-4 h-4 text-emerald-400 ml-auto flex-shrink-0" />}
+                    <input
+                      type="file"
+                      accept=".pdf,.doc,.docx"
+                      className="hidden"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0]
+                        if (file && file.size <= 5 * 1024 * 1024) setResumeFile(file)
+                        else if (file) alert("File is too large. Please upload a file under 5MB.")
+                      }}
+                    />
                   </label>
                 </div>
                 <div className="glass border border-indigo-500/15 rounded-xl p-4">
@@ -323,24 +339,41 @@ export default function ApplyPage() {
                 </div>
               </div>
               <div className="flex gap-3 mt-6">
-                <button onClick={() => setStep(2)} className="btn-outline flex-1 text-indigo-300 font-semibold py-3.5 rounded-xl">Back</button>
-                <button onClick={() => {
-                    const payload = {
-                      positionType, departments: selectedDepts, otherDept,
-                      ...fields, experience, availability, bio, projectDesc,
+                <button onClick={() => setStep(2)} className="btn-outline flex-1 text-indigo-300 font-semibold py-3.5 rounded-xl" disabled={submitting}>Back</button>
+                <button
+                  disabled={submitting}
+                  onClick={async () => {
+                    setSubmitting(true)
+                    try {
+                      let resumeBase64 = ""
+                      let resumeFileName = ""
+                      if (resumeFile) {
+                        resumeBase64 = await toBase64(resumeFile)
+                        resumeFileName = resumeFile.name
+                      }
+                      const payload = {
+                        positionType, departments: selectedDepts, otherDept,
+                        ...fields, experience, availability, bio, projectDesc,
+                      }
+                      saveApplication(payload)
+                      await submitToSheets("application", {
+                        ...fields,
+                        positionType,
+                        departments: selectedDepts.join(", "),
+                        otherDept, experience, availability, bio, projectDesc,
+                        resumeBase64,
+                        resumeFileName,
+                      })
+                      setSubmitted(true)
+                    } catch (err) {
+                      console.error("Submission error:", err)
+                      alert("Something went wrong. Please check your connection and try again.")
+                      setSubmitting(false)
                     }
-                    saveApplication(payload)
-                    submitToSheets("application", {
-                      ...fields,
-                      positionType,
-                      departments: selectedDepts.join(", "),
-                      otherDept, experience, availability, bio, projectDesc,
-                    })
-                    setSubmitted(true)
                   }}
-                  className="btn-primary flex-[2] inline-flex items-center justify-center gap-2 text-white font-bold py-4 rounded-xl">
-                  <span>Submit Application</span>
-                  <ArrowRight className="w-4 h-4" style={{ position: "relative", zIndex: 1 }} />
+                  className="btn-primary flex-[2] inline-flex items-center justify-center gap-2 text-white font-bold py-4 rounded-xl disabled:opacity-60 disabled:cursor-not-allowed">
+                  <span>{submitting ? "Submitting…" : "Submit Application"}</span>
+                  {!submitting && <ArrowRight className="w-4 h-4" style={{ position: "relative", zIndex: 1 }} />}
                 </button>
               </div>
               <p className="text-xs text-[#8888aa] text-center mt-3">We reply to every application within 3 business days.</p>
@@ -351,6 +384,16 @@ export default function ApplyPage() {
       </div>
     </div>
   )
+}
+
+/* ── File → base64 ── */
+function toBase64(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onload = () => resolve((reader.result as string).split(",")[1] ?? "")
+    reader.onerror = reject
+    reader.readAsDataURL(file)
+  })
 }
 
 /* ── Validated field component ── */
